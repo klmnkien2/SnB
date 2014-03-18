@@ -1,0 +1,6 @@
+<resources>
+
+    <dimen name="button_font_size">18sp</dimen>
+    <dimen name="nav_text_font_size">22sp</dimen>
+
+</resources>

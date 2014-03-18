@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="full_transparent">#00000000</color>
+    <color name="color_preloader_center">#4C4C4C</color>
+    <color name="color_preloader_end">#1A1A1A</color>
+    <color name="color_preloader_start">#808080</color>
+    <color name="color_page_background">#EBF5FF</color>
+    <color name="color_title_backgound">#80000000</color>
+    <color name="color_navigator">#FFFFFF</color>
+</resources>

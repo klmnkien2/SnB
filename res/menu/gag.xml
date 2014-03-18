@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dvkcode="http://schemas.android.com/apk/res-auto" >
+    <item android:id="@+id/action_refesh"         
+        android:icon="@drawable/refresh" 
+        android:title="F5"
+        dvkcode:showAsAction="always|withText" />
+</menu>

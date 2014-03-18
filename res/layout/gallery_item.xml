@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical" 
+    android:padding="2dip"
+    android:background="@drawable/gallery_item_bg">
+
+    <TextView
+        android:id="@+id/_galleryItemTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"        
+        android:textColor="#000f63"
+        android:textSize="@dimen/button_font_size" />
+
+    <ImageView
+        android:id="@+id/_galleryItemImage"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+</LinearLayout>
