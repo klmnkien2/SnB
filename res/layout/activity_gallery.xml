@@ -5,37 +5,19 @@
     android:layout_height="match_parent"
     android:background="#000000" >
 
-    <ScrollView
-        android:id="@+id/_galleryContent"
+    <com.astuetz.PagerSlidingTabStrip
+	    android:id="@+id/gallery_tabs"
+	    android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+	    android:layout_width="match_parent"
+	    android:layout_height="48dip" />
+    
+    <android.support.v4.view.ViewPager
+        android:id="@+id/gallery_viewPager"
+        android:layout_above="@+id/adView"
+        android:layout_below="@+id/gallery_tabs"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/adView" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="top"            
-            android:orientation="horizontal" >
-
-            <LinearLayout
-                android:id="@+id/_galleryLeft"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:orientation="vertical" >
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/_galleryRight"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:orientation="vertical" >
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+        android:layout_height="match_parent" />
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
