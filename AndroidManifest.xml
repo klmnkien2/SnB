@@ -35,7 +35,7 @@
         </activity>
         
         <activity
-            android:name="dovietkien.me.sexynbeauty.GagActivity"
+            android:name="dovietkien.me.sexynbeauty.ViewActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
         </activity>

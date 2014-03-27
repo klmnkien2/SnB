@@ -6,8 +6,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
-import dovietkien.me.sexynbeauty.utils.GagsParser;
+import dovietkien.me.sexynbeauty.utils.GalleryLoader;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,7 +43,7 @@ public class GalleryActivity extends ActionBarActivity {
     
     public void setupTabAndViewPager() {
         mViewPager = (ViewPager) findViewById(R.id.gallery_viewPager);
-        mGalleryPagerAdapter = new GalleryPagerAdapter(getSupportFragmentManager());
+        mGalleryPagerAdapter = new GalleryPagerAdapter(getSupportFragmentManager(), this);
         mViewPager.setAdapter(mGalleryPagerAdapter);
         mViewPager.setOnPageChangeListener(mGalleryPagerAdapter);
         
@@ -53,6 +54,7 @@ public class GalleryActivity extends ActionBarActivity {
     }
     
     public static class GalleryPagerAdapter extends FragmentStatePagerAdapter implements ViewPager.OnPageChangeListener {
+        Context mContext;
         private final String[] nav_names = {
                 "Việt Nam",
                 "Asia",
@@ -60,13 +62,14 @@ public class GalleryActivity extends ActionBarActivity {
         };
         
         private final String[] nav_links = {
-                GagsParser.VN_URL,
-                GagsParser.ASIA_URL,
-                GagsParser.USUK_URL,
+                GalleryLoader.VN_URL,
+                GalleryLoader.ASIA_URL,
+                GalleryLoader.USUK_URL,
         };
 
-        public GalleryPagerAdapter(FragmentManager fragmentManager) {
+        public GalleryPagerAdapter(FragmentManager fragmentManager, Context mContext) {            
             super(fragmentManager);
+            this.mContext = mContext;
         }
 
         @Override
@@ -81,7 +84,7 @@ public class GalleryActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return GalleryFragment.newInstance(nav_links[position]);
+            return GalleryFragment.newInstance(mContext, nav_links[position]);
         }
 
         @Override

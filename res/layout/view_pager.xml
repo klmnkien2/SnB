@@ -3,26 +3,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-     <RelativeLayout
-         android:layout_width="fill_parent"
-         android:layout_height="fill_parent" >
-
-         <dovietkien.me.sexynbeauty.TouchImageView
-             android:id="@+id/_image"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content" />
-     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/_imageName"
+    <dovietkien.me.sexynbeauty.TouchImageView
+        android:id="@+id/_image"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:padding="1dip"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:background="@color/color_title_backgound"
-        android:textColor="@android:color/white"
-        android:gravity="center" />
+        android:layout_height="wrap_content" />
 
     <ProgressBar
         android:id="@+id/_progressBar"

@@ -22,13 +22,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import dovietkien.me.sexynbeauty.model.GalleryItem;
-import dovietkien.me.sexynbeauty.utils.GalleryController.GalleryChangeListener;
+import dovietkien.me.sexynbeauty.model.ViewItem;
+import dovietkien.me.sexynbeauty.utils.ViewController.ViewChangeListener;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class GalleryLoader extends AsyncTask<String, Integer, Void>
+public class ViewLoader extends AsyncTask<String, Integer, Void>
 {    
     private static int PRE_LOADING = 1;
     private static int SUCCESS_STATUS = 2;
@@ -39,11 +39,11 @@ public class GalleryLoader extends AsyncTask<String, Integer, Void>
     public static String ASIA_URL = BASE_URL + "/asia/p1";
     public static String USUK_URL = BASE_URL + "/us-uk/p1";
 
-    private GalleryChangeListener listener;
-    private List<GalleryItem> mGalleryItems;
-    private String currentUrl, nextUrl;
+    private ViewChangeListener listener;
+    private ArrayList<ViewItem> mViewItems;
+    private String parseUrl;
 
-    public GalleryLoader(GalleryChangeListener listener)
+    public ViewLoader(ViewChangeListener listener)
     {
         this.listener = listener;
     }
@@ -55,10 +55,10 @@ public class GalleryLoader extends AsyncTask<String, Integer, Void>
         {
             publishProgress(PRE_LOADING);
 
-            currentUrl = params[0];
-            galleryParser(currentUrl);
-            mGalleryItems = getMoreGalleryItem();
-            nextUrl = getNextPage();
+            parseUrl = params[0];
+            Log.e("parse link", parseUrl);
+            viewParser(parseUrl);
+            mViewItems = getMoreViewItem();
             
             publishProgress(SUCCESS_STATUS);
         }
@@ -75,23 +75,23 @@ public class GalleryLoader extends AsyncTask<String, Integer, Void>
     {
         if(values[0].intValue() == PRE_LOADING)
         {
-            listener.onThumbsPreLoading();
+            listener.onViewPreLoading();
         }
         else if(values[0].intValue() == SUCCESS_STATUS)
         {
-            listener.onThumbsLoaded(mGalleryItems, nextUrl);
+            listener.onViewLoaded(mViewItems);
         } 
         else if(values[0].intValue() == ERROR_STATUS)
         {
-            listener.onThumbsLoadFail(new Exception("Error to connect network!"));
+            listener.onViewLoadFail(new Exception("Error to connect network!"));
         }
     }
     
     private Document doc;
-    private Elements gagsElements;
+    private Elements elements;
     private Element content;
     
-    public void galleryParser(String url) throws IOException
+    public void viewParser(String url) throws IOException
     {
         String str = "";
         
@@ -115,56 +115,36 @@ public class GalleryLoader extends AsyncTask<String, Integer, Void>
         }
 
         doc = Jsoup.parse(str);
-        content = doc.select("#vd-topics").get(0);        
-        gagsElements = content.select(".vd-topic-inner");
+        Log.e("here", "1");
+        content = doc.select("#vd-view-carousel").get(0);    
+        Log.e("here", "2");
+        elements = content.select(".carousel-inner > .item");
+        Log.e("here", "3");
     }
 
-    public List<GalleryItem> getMoreGalleryItem()
+    public ArrayList<ViewItem> getMoreViewItem()
     {
-        ArrayList<GalleryItem> mGalleryItems = new ArrayList<GalleryItem>();
-        Iterator<Element> i = gagsElements.iterator();
+        ArrayList<ViewItem> mViewItems = new ArrayList<ViewItem>();
+        Iterator<Element> i = elements.iterator();
 
         while(i.hasNext())
         {
             Element e = i.next();
-            GalleryItem item = getItem(e);
+            ViewItem item = getItem(e);
             if(item != null)
-                mGalleryItems.add(item);
+                mViewItems.add(item);
         }
 
-        return mGalleryItems;
+        return mViewItems;
     }
 
-    public String getNextPage()
-    {
-        String page = "";
-        boolean isDone = false;
-        for(int i=currentUrl.length()-1; i >= 0; i--) {
-            if(currentUrl.charAt(i) != 'p') page = currentUrl.charAt(i) + page;
-            else {
-                if(!isDone) {
-                    page = String.valueOf(Long.parseLong(page) + 1);
-                    isDone = true;
-                }
-                page = currentUrl.charAt(i) + page;
-            }
-        }        
-        
-        Log.e("nextPage", page);
-        return page;
-    }
-
-    private GalleryItem getItem(Element e)
+    private ViewItem getItem(Element e)
     {
         try {            
-            Element header = e.select(".vd-topic-title > a").get(0);
-            String galleryUrl= header.attr("href");        
-            String title = header.select("span").get(0).html();    
-            String imageUrl = e.select(".vd-topic-image > a > img").get(0).attr("src");
-            
-//            Log.e("imageUrl", imageUrl);
+            String imageUrl = e.select("img.img").get(0).attr("src");            
+            Log.e("imageUrl", imageUrl);
     
-            return new GalleryItem(galleryUrl, title, imageUrl);
+            return new ViewItem(imageUrl);
         } catch (Exception ex) {
             Log.e("Boc tach loi element", ex.getMessage());  
             return null;

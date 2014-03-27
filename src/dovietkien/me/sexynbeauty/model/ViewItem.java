@@ -1,6 +1,6 @@
 package dovietkien.me.sexynbeauty.model;
 
-public class Gag
+public class ViewItem
 {
     private String gagid;
     private String gagUrl;
@@ -9,11 +9,8 @@ public class Gag
     private boolean loadingOnly;
     private boolean networkTrouble;
 
-    public Gag(String gagid, String gagUrl, String title, String imageUrl)
+    public ViewItem(String imageUrl)
     {
-        this.gagid = gagid;
-        this.gagUrl = gagUrl;
-        this.title = title;
         this.imageUrl = imageUrl;
         this.loadingOnly = false;
         this.networkTrouble = false;

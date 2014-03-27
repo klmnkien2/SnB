@@ -4,7 +4,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
-import dovietkien.me.sexynbeauty.model.Gag;
+import dovietkien.me.sexynbeauty.model.ViewItem;
+import dovietkien.me.sexynbeauty.model.GalleryItem;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,11 +16,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class GagFragment extends Fragment {
-    // Store instance variables
+public class ViewFragment extends Fragment {
+
     private String title;
     private String imageUrl;
-    private int page;
     private boolean isLoadingOnly;
     private boolean networkTrouble;
     View view;
@@ -27,13 +27,11 @@ public class GagFragment extends Fragment {
     View errorContent;
     TouchImageView mImageView;
 
-    // newInstance constructor for creating fragment with arguments
-    public static GagFragment newInstance(int page, Gag gag) {
-        GagFragment fragment = new GagFragment();
+    public static ViewFragment newInstance(int page, ViewItem gag) {
+        ViewFragment fragment = new ViewFragment();
         Bundle args = new Bundle();
-        args.putInt("someInt", page);
-        args.putString("someTitle", gag.getTitle());
-        args.putString("someUrl", gag.getImageUrl());
+        args.putString("title", gag.getTitle());
+        args.putString("imageUrl", gag.getImageUrl());
         args.putBoolean("isLoadingOnly", gag.isLoadingOnly());
         args.putBoolean("networkTrouble", gag.isNetworkTrouble());
         fragment.setArguments(args);
@@ -41,21 +39,19 @@ public class GagFragment extends Fragment {
         return fragment;
     }
 
-    // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        page = getArguments().getInt("someInt", 0);
-        title = getArguments().getString("someTitle");
-        imageUrl = getArguments().getString("someUrl");
+        
+        title = getArguments().getString("title");
+        imageUrl = getArguments().getString("imageUrl");
         isLoadingOnly = getArguments().getBoolean("isLoadingOnly");
         networkTrouble = getArguments().getBoolean("networkTrouble");
     }
 
-    // Inflate the view for the fragment based on layout XML
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.page, container, false);
+        view = inflater.inflate(R.layout.view_pager, container, false);
         progressBar = (ProgressBar) view.findViewById(R.id._progressBar);
         errorContent = view.findViewById(R.id._errorContent);
         
@@ -66,7 +62,7 @@ public class GagFragment extends Fragment {
                 errorContent.setOnClickListener(new View.OnClickListener() {                    
                     @Override
                     public void onClick(View v) {
-                        ((GagActivity)getActivity()).refeshGags();        
+                        ((ViewActivity)getActivity()).refeshGags();        
                     }
                 });
             } else {
@@ -74,10 +70,7 @@ public class GagFragment extends Fragment {
                 errorContent.setVisibility(View.GONE);
             }
             return view;
-        }
-        
-        TextView mTitle = (TextView) view.findViewById(R.id._imageName);        
-        mTitle.setText(replaceSpecialCharactor(title));        
+        } 
         
         mImageView = (TouchImageView) view.findViewById(R.id._image);
         mImageView.setMaxZoom(4);
@@ -87,7 +80,7 @@ public class GagFragment extends Fragment {
     }
     
     private void loadImage() {
-        ImageLoader mImageLoader = ((GagActivity)getActivity()).getImageLoader();
+        ImageLoader mImageLoader = ((ViewActivity)getActivity()).getImageLoader();
         mImageLoader.displayImage(imageUrl, mImageView, new ImageLoadingListener() {
 
             @Override
@@ -98,7 +91,7 @@ public class GagFragment extends Fragment {
 
             @Override
             public void onLoadingFailed(String arg0, View arg1, FailReason arg2) {
-                Log.i("Kiendv", "fail to load");
+            
                 progressBar.setVisibility(View.GONE);
                 errorContent.setVisibility(View.VISIBLE);
                 errorContent.setOnClickListener(new View.OnClickListener() {                    
@@ -116,7 +109,7 @@ public class GagFragment extends Fragment {
 
             @Override
             public void onLoadingCancelled(String arg0, View arg1) {        
-                Log.i("Kiendv", "fail to load");
+      
                 progressBar.setVisibility(View.GONE);
                 errorContent.setVisibility(View.VISIBLE);
                 errorContent.setOnClickListener(new View.OnClickListener() {                    
@@ -127,13 +120,5 @@ public class GagFragment extends Fragment {
                 });
             }
         });
-    }
-    
-    private String replaceSpecialCharactor(String input) {
-        String output = input.replaceAll("&quot;", "\"")
-                .replaceAll("&amp;", "&")
-                .replaceAll("&gt;", ">")
-                .replaceAll("&lt;", "<");
-        return output;
     }
 }

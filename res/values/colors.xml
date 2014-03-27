@@ -7,4 +7,8 @@
     <color name="color_page_background">#EBF5FF</color>
     <color name="color_title_backgound">#80000000</color>
     <color name="color_navigator">#FFFFFF</color>
+    
+    <color name="gallery_background">#D8D8D8</color>
+    <color name="gallery_item_bg">#FFFFFF</color>
+    <color name="gallery_item_border">#848484</color>
 </resources>

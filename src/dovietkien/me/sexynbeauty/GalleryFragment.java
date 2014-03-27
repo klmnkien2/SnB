@@ -13,21 +13,26 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import dovietkien.me.sexynbeauty.model.GalleryItem;
 import dovietkien.me.sexynbeauty.utils.GalleryController;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class GalleryFragment extends Fragment implements GalleryController.GalleryChangeListener {
 
-    private Context mContext;
+    private static Context mContext;
+    private LayoutInflater inflater;
     private String dataUrl;        
     private ImageLoader imageLoader;
     private View galleryView;
@@ -35,13 +40,11 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     private String more_thumbs_link;
     public static int LOAD_IN_ONCE_NUMBER = 5;
     private ArrayList<GalleryItem> mGalleryItems = new ArrayList<GalleryItem>();
-    
-    //Testing purpose
-    String test_url1 = "http://photo.depvd.com/14/016/20/ph_lSRd1f9wDL_6QhcDYge_wi.jpg";
-    String test_url2 = "http://photo.depvd.com/13/275/13/ph_lNgZSnqXz8_SkiEER70_wi.jpg";
-    String test_url3 = "http://photo.depvd.com/13/356/22/ph_lNgZSnqXz8_vqJP2qi7_wi.jpg";
 
-    public static GalleryFragment newInstance(String dataUrl) {
+    public static GalleryFragment newInstance(Context mContext, String dataUrl) {
+        if(GalleryFragment.mContext == null) 
+            GalleryFragment.mContext = mContext;
+        
         GalleryFragment fragment = new GalleryFragment();
         Bundle args = new Bundle();
         args.putString("dataUrl", dataUrl);
@@ -50,64 +53,35 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         return fragment;
     }
     
-    public void loadMoreThumbs() {
-        if(mGalleryItems.size() > LOAD_IN_ONCE_NUMBER) {
-            
-        } else {
-            mGalleryController.getMoreThumbs(more_thumbs_link);
-        }
+    public void loadMoreThumbs() {       
+        mGalleryController.getMoreThumbs(more_thumbs_link);
     }
     
-    public void addTest() {
+    public void loadGalleryPage(final List<GalleryItem> thumbImageUrls) {
         LinearLayout leftColView = (LinearLayout)galleryView.findViewById(R.id._galleryLeft);
         LinearLayout rightColView = (LinearLayout)galleryView.findViewById(R.id._galleryRight);
         
-        LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        
-        for(int i=0; i<4; i++) {
+        for(int i=0; i<thumbImageUrls.size(); i++) {
             final View view = inflater.inflate(R.layout.gallery_item, null);
+            final GalleryItem galleryItem = thumbImageUrls.get(i);
             TextView mTitle = (TextView) view.findViewById(R.id._galleryItemTitle);        
-            mTitle.setText("wat de fuk");        
+            mTitle.setText(galleryItem.getImageUrl());     
             
-            String url = null;
-            switch (i) {
-            case 0:
-                url = test_url1;
-                break;
-            case 1:
-                url = test_url2;
-                break;
-            case 2:
-                url = test_url3;
-                break;    
-            case 3:
-                url = test_url1;
-                break;   
-
-            default:
-                break;
-            }
-            final ImageView mImageView = (ImageView) view.findViewById(R.id._galleryItemImage);
-            if(url != null) imageLoader.displayImage(url, mImageView, new ImageLoadingListener() {
-
+//            ImageView thumbView = (ImageView) view.findViewById(R.id._galleryItemImage);
+//            imageLoader.displayImage(galleryItem.getImageUrl(), thumbView);
+            
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            params.topMargin = params.bottomMargin = params.leftMargin = params.rightMargin = convertDipToPixels(6); 
+            view.setLayoutParams(params);
+            
+            view.setOnClickListener(new View.OnClickListener() {
+                
                 @Override
-                public void onLoadingStarted(String arg0, View arg1) {
-                    
-                }
-
-                @Override
-                public void onLoadingFailed(String arg0, View arg1, FailReason arg2) {
-                   
-                }
-
-                @Override
-                public void onLoadingComplete(String arg0, View arg1, Bitmap arg2) {
-                    mImageView.getLayoutParams().height = 200;
-                }
-
-                @Override
-                public void onLoadingCancelled(String arg0, View arg1) {        
-                    
+                public void onClick(View v) {
+                    Intent i = new Intent(getActivity(), ViewActivity.class); 
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    i.putExtra("GALLERY_URL", galleryItem.getGalleryUrl());           
+                    getActivity().startActivity(i);              
                 }
             });
             
@@ -115,21 +89,31 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
             else rightColView.addView(view);
         }
     }
+    
+    public int convertDipToPixels(float valueDips) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((Activity)mContext).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        float SCALE_DIP = metrics.density;
+        
+        int valuePixels = (int)(valueDips * SCALE_DIP + 0.5f);
+        return valuePixels;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dataUrl = getArguments().getString("dataUrl");
         
+        more_thumbs_link = dataUrl;
         mGalleryController = new GalleryController(this);
+        initImageLoader();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.inflater = inflater;
         galleryView = inflater.inflate(R.layout.gallery_pager, container, false);
-        
-        TextView mTitle = (TextView) galleryView.findViewById(R.id._imageName);        
-        mTitle.setText(replaceSpecialCharactor(dataUrl));       
+        mGalleryController.getMoreThumbs(dataUrl);
         
         return galleryView;
     }
@@ -141,7 +125,8 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
 
     @Override
     public void onThumbsLoaded(List<GalleryItem> thumbImageUrls, String nextUrl) {
- 
+        more_thumbs_link = nextUrl;
+        loadGalleryPage(thumbImageUrls);
     }
 
     @Override

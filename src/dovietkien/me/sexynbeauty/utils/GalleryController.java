@@ -2,7 +2,7 @@ package dovietkien.me.sexynbeauty.utils;
 
 import java.util.List;
 
-import dovietkien.me.sexynbeauty.model.Gag;
+import dovietkien.me.sexynbeauty.model.ViewItem;
 import dovietkien.me.sexynbeauty.model.GalleryItem;
 
 public class GalleryController
