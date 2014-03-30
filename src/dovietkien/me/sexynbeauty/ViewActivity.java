@@ -1,7 +1,6 @@
 package dovietkien.me.sexynbeauty;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
@@ -14,7 +13,6 @@ import com.facebook.widget.WebDialog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -32,10 +30,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -45,14 +44,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.TextView;
 
 public class ViewActivity extends ActionBarActivity implements ViewChangeListener {
     private ProgressDialog dialog;
     MenuAdapter mListAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
 
     private AdView adView;
-    private InterstitialAd interstitial;
     
     private ViewPager mViewPager;
     private ViewPagerAdapter mViewPagerAdapter;
@@ -62,14 +60,16 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
     private ViewController mViewController;
     
     // Url of viewing image
-    private ViewItem currentViewGag;  
+    private ViewItem currentView;  
+    private String labelInBar;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gag);
+        setContentView(R.layout.activity_view);
         setupFacebookOnCreate(savedInstanceState);
         
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initImageLoader();
         addAds();        
         
@@ -80,48 +80,47 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         mViewController.getViewLinks(urlToLoad);
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_view, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.item_text);
+
+        TextView tv = (TextView)MenuItemCompat.getActionView(item).findViewById(R.id.total_text);
+        tv.setText(labelInBar == null ? "" : labelInBar);
+        
+        return super.onPrepareOptionsMenu(menu);
+    }
+    
     public void setupViewPager() {
         mViewPager = (ViewPager) findViewById(R.id.viewPager);        
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this);
         mViewPager.setAdapter(mViewPagerAdapter);
         mViewPager.setOnPageChangeListener(mViewPagerAdapter);
-        mViewPagerAdapter.addLoadingOnly();
-    }
-    
-    public void loadViewPager(ArrayList<ViewItem> items) {
-        mViewPager = (ViewPager) findViewById(R.id.viewPager);        
-        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this);
-        mViewPager.setAdapter(mViewPagerAdapter);
-        mViewPager.setOnPageChangeListener(mViewPagerAdapter);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.gag, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+    public boolean onOptionsItemSelected(MenuItem item) 
+    {
+        switch (item.getItemId()) 
+        {
+        case android.R.id.home: 
+            NavUtils.navigateUpFromSameTask(this);
+            break;
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        // ActionBarDrawerToggle will take care of this.
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        
-        // Handle action buttons
-        switch(item.getItemId()) {
-        case R.id.action_refesh:
-            refeshGags();  
-            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
+        return true;
     }
     
     public void download(View v) {
-        new GagsDownloader(this).execute(currentViewGag.getImageUrl());
+        new GagsDownloader(this).execute(currentView.getImageUrl());
     }
     
     public ImageLoader getImageLoader() {
@@ -233,7 +232,11 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
 
         @Override
         public void onPageSelected(int position) {
-            
+            if(!items.get(position).isLoadingOnly()) {
+                ((ViewActivity)mContext).setCurrentView(items.get(position));
+                ((ViewActivity)mContext).setLabelInBar(position + "/" + items.size());
+                ((ViewActivity)mContext).supportInvalidateOptionsMenu();
+            }
         }
 
         @Override
@@ -253,17 +256,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
     
     @Override
     public void onBackPressed() {
-        if (interstitial.isLoaded()) {
-            interstitial.setAdListener(new AdListener() {
-                @Override
-                public void onAdClosed() {
-                    moveTaskToBack(true);
-                }
-            });
-            interstitial.show();
-        } else {        
-            moveTaskToBack(true);
-        }
+        NavUtils.navigateUpFromSameTask(this);
     }
 
     @Override
@@ -302,10 +295,6 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         .build();
 
         adView.loadAd(adRequest);
-        
-        interstitial = new InterstitialAd(this);
-        interstitial.setAdUnitId(getResources().getString(R.string.ad_unit_id));
-        interstitial.loadAd(adRequest);
     }
     
     /*
@@ -369,7 +358,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
                 .setLink(getLink())
                 .setName(getName())
                 .setDescription(getMessage())
-                .setPicture(currentViewGag.getImageUrl())
+                .setPicture(currentView.getImageUrl())
                 .build();
             uiHelper.trackPendingDialogCall(shareDialog.present());
         
@@ -383,7 +372,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         params.putString("name", getName());
         params.putString("description", getMessage());
         params.putString("link", getLink());
-        params.putString("picture", currentViewGag.getImageUrl());
+        params.putString("picture", currentView.getImageUrl());
 
         dialog.show();
         WebDialog feedDialog = (
@@ -462,5 +451,13 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
     public void onViewLoadFail(Exception ex) {
         // TODO Auto-generated method stub
         
+    }
+    
+    public void setCurrentView(ViewItem item) {
+        this.currentView = item;
+    }
+    
+    public void setLabelInBar(String label) {
+        this.labelInBar = label;
     }
 }

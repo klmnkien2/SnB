@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dvkcode="http://schemas.android.com/apk/res-auto" >
+    <item android:id="@+id/item_text"
+        dvkcode:showAsAction="always"
+        dvkcode:actionLayout="@layout/view_menu_text"/>
+</menu>

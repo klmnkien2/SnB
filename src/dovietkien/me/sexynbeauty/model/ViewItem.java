@@ -2,8 +2,6 @@ package dovietkien.me.sexynbeauty.model;
 
 public class ViewItem
 {
-    private String gagid;
-    private String gagUrl;
     private String title;
     private String imageUrl;
     private boolean loadingOnly;
@@ -14,16 +12,6 @@ public class ViewItem
         this.imageUrl = imageUrl;
         this.loadingOnly = false;
         this.networkTrouble = false;
-    }
-
-    public String getGagId()
-    {
-        return gagid;
-    }
-
-    public String getGagUrl()
-    {
-        return gagUrl;
     }
 
     public String getTitle()

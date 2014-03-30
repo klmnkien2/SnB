@@ -10,6 +10,10 @@
 	    android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
 	    android:layout_width="match_parent"
+	    android:background="#003366"
+        pstsShouldExpand="true"
+	    pstsIndicatorColor="#FF9933"
+	    pstsDividerColor="#FF9933"
 	    android:layout_height="48dip" />
     
     <android.support.v4.view.ViewPager
@@ -22,7 +26,7 @@
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         ads:adSize="SMART_BANNER"

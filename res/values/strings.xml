@@ -14,4 +14,5 @@
     <string name="dialog_ok">OK</string>
     <string name="permission_not_granted">Unable to perform action because permissions were not granted.</string>
     <string name="cancelled">Cancelled</string>
+    <string name="nav_back">Back</string>
 </resources>

@@ -115,11 +115,10 @@ public class ViewLoader extends AsyncTask<String, Integer, Void>
         }
 
         doc = Jsoup.parse(str);
-        Log.e("here", "1");
+
         content = doc.select("#vd-view-carousel").get(0);    
-        Log.e("here", "2");
-        elements = content.select(".carousel-inner > .item");
-        Log.e("here", "3");
+  
+        elements = content.select(".carousel-inner > .item"); 
     }
 
     public ArrayList<ViewItem> getMoreViewItem()
