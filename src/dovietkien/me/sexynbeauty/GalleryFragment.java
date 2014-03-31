@@ -113,25 +113,25 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.inflater = inflater;
         galleryView = inflater.inflate(R.layout.gallery_pager, container, false);
-        mGalleryController.getMoreThumbs(dataUrl);
         
         return galleryView;
     }
 
     @Override
     public void onThumbsPreLoading() {
-        
+        ((GalleryActivity)mContext).showProgressDialog();
     }
 
     @Override
     public void onThumbsLoaded(List<GalleryItem> thumbImageUrls, String nextUrl) {
         more_thumbs_link = nextUrl;
         loadGalleryPage(thumbImageUrls);
+        ((GalleryActivity)mContext).closeProgressDialog();
     }
 
     @Override
     public void onThumbsLoadFail(Exception ex) {
-        
+        ((GalleryActivity)mContext).closeProgressDialog();
     }
 
     public void initImageLoader() {
