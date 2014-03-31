@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto"
     android:id="@+id/gallery_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,9 +11,10 @@
         android:layout_centerHorizontal="true"
 	    android:layout_width="match_parent"
 	    android:background="#003366"
-        pstsShouldExpand="true"
-	    pstsIndicatorColor="#FF9933"
-	    pstsDividerColor="#FF9933"
+	    android:textColor="#FFFFFF"
+        myapp:pstsShouldExpand="true"
+	    myapp:pstsIndicatorColor="#FF9933"
+	    myapp:pstsDividerColor="#FF9933"
 	    android:layout_height="48dip" />
     
     <android.support.v4.view.ViewPager
@@ -29,8 +30,8 @@
         android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        ads:adSize="SMART_BANNER"
-        ads:adUnitId="@string/ad_unit_id"
+        myapp:adSize="SMART_BANNER"
+        myapp:adUnitId="@string/ad_unit_id"
         android:background="@android:color/black" />
 
 </RelativeLayout>
