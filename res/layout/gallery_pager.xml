@@ -8,12 +8,12 @@
     <ScrollView
         android:id="@+id/_galleryContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/adView" >
+        android:layout_height="match_parent" >
 
         <LinearLayout
+            android:baselineAligned="false"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="3dip"
             android:gravity="top"            
             android:orientation="horizontal" >
