@@ -8,6 +8,7 @@ import com.google.android.gms.ads.InterstitialAd;
 
 import dovietkien.me.sexynbeauty.utils.GalleryLoader;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -17,12 +18,11 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.SparseArray;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 public class GalleryActivity extends ActionBarActivity {
-
-    private AdView adView;
-    private InterstitialAd interstitial;  
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +32,7 @@ public class GalleryActivity extends ActionBarActivity {
         
         addAds();
         setupTabAndViewPager();
+        setupProgressDialog();
     }
     
     /*
@@ -51,10 +52,19 @@ public class GalleryActivity extends ActionBarActivity {
         mtabs = (PagerSlidingTabStrip) findViewById(R.id.gallery_tabs);
         mtabs.setViewPager(mViewPager);
         mtabs.setOnPageChangeListener(mGalleryPagerAdapter);
+        mViewPager.post(new Runnable(){
+        @Override
+            public void run() {
+                mGalleryPagerAdapter.onPageSelected(0);
+            }
+        });
+        
     }
     
     public static class GalleryPagerAdapter extends FragmentStatePagerAdapter implements ViewPager.OnPageChangeListener {
         Context mContext;
+        SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+        
         private final String[] nav_names = {
                 "Việt Nam",
                 "Asia",
@@ -86,6 +96,23 @@ public class GalleryActivity extends ActionBarActivity {
         public Fragment getItem(int position) {
             return GalleryFragment.newInstance(mContext, nav_links[position]);
         }
+        
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+            registeredFragments.put(position, fragment);
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            registeredFragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
+        
+        public Fragment getRegisteredFragment(int position) {
+            return registeredFragments.get(position);
+        }
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -93,6 +120,10 @@ public class GalleryActivity extends ActionBarActivity {
 
         @Override
         public void onPageSelected(int position) {
+            GalleryFragment fragment = (GalleryFragment)getRegisteredFragment(position);
+            if(fragment != null) {
+                fragment.loadMoreThumbs();
+            }
         }
 
         @Override
@@ -105,6 +136,12 @@ public class GalleryActivity extends ActionBarActivity {
         }
 
     }
+    
+    /*
+     * Admob coding block
+     */
+    private AdView adView;
+    private InterstitialAd interstitial;  
     
     @Override
     public void onBackPressed() {
@@ -161,6 +198,33 @@ public class GalleryActivity extends ActionBarActivity {
 
         // Begin loading your interstitial.
         interstitial.loadAd(adRequest);
+    }
+    
+    /*
+     * Setup a progresDialog
+     */
+    private ProgressDialog dialog;
+    
+    public void setupProgressDialog() {
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading ...");
+        dialog.setCancelable(false);
+    }
+    
+    public void showProgressDialog() {
+        if (dialog!=null) {
+            if (!dialog.isShowing()) {
+                dialog.show();
+            }
+        }
+    }
+    
+    public void closeProgressDialog() {
+        if (dialog!=null) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        }
     }
     
     public void displayAlert(String title, String message) {
