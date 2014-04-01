@@ -1,4 +1,4 @@
-package dovietkien.me.sexynbeauty.utils;
+package redgao.leoxun.sexynbeauty.utils;
 
 //import java.security.MessageDigest;
 //import java.security.NoSuchAlgorithmException;

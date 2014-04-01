@@ -3,14 +3,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <dovietkien.me.sexynbeauty.TouchImageView
+    <redgao.leoxun.sexynbeauty.TouchImageView
         android:id="@+id/_image"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
     <ProgressBar
         android:id="@+id/_progressBar"
-        style="?android:attr/progressBarStyleLarge"
+        style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"

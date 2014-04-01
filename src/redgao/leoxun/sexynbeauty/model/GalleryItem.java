@@ -1,4 +1,4 @@
-package dovietkien.me.sexynbeauty.model;
+package redgao.leoxun.sexynbeauty.model;
 
 public class GalleryItem
 {

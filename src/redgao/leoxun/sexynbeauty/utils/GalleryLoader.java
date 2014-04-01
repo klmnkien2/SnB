@@ -1,4 +1,4 @@
-package dovietkien.me.sexynbeauty.utils;
+package redgao.leoxun.sexynbeauty.utils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -22,8 +22,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import dovietkien.me.sexynbeauty.model.GalleryItem;
-import dovietkien.me.sexynbeauty.utils.GalleryController.GalleryChangeListener;
+import redgao.leoxun.sexynbeauty.model.GalleryItem;
+import redgao.leoxun.sexynbeauty.utils.GalleryController.GalleryChangeListener;
+
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -99,8 +100,8 @@ public class GalleryLoader extends AsyncTask<String, Integer, Void>
         final HttpParams params = mHttpClient.getParams();
         
         //Setup proxy
-//        HttpHost proxy = new HttpHost("192.168.133.252", 3128, "http");
-//        params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        HttpHost proxy = new HttpHost("10.28.16.16", 8080, "http");
+        params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
         HttpConnectionParams.setConnectionTimeout(params, 10000);
         HttpConnectionParams.setSoTimeout(params, 10000);

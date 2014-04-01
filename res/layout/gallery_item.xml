@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="3dip"
-    android:background="@drawable/gallery_item_bg">
+    >
 
     <TextView
         android:id="@+id/_galleryItemTitle"
@@ -16,6 +15,9 @@
         android:textSize="@dimen/button_font_size" />
 
     <ImageView
+        android:background="@drawable/gallery_item_bg"
+        android:paddingLeft="2dip"
+        android:paddingRight="2dip"
         android:id="@+id/_galleryItemImage"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

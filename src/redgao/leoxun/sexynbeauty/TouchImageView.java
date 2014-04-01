@@ -8,13 +8,13 @@
  * Extends Android ImageView to include pinch zooming, panning, fling and double tap zoom.
  */
 
-package dovietkien.me.sexynbeauty;
+package redgao.leoxun.sexynbeauty;
 
-import static dovietkien.me.sexynbeauty.TouchImageView.State.ANIMATE_ZOOM;
-import static dovietkien.me.sexynbeauty.TouchImageView.State.DRAG;
-import static dovietkien.me.sexynbeauty.TouchImageView.State.FLING;
-import static dovietkien.me.sexynbeauty.TouchImageView.State.NONE;
-import static dovietkien.me.sexynbeauty.TouchImageView.State.ZOOM;
+import static redgao.leoxun.sexynbeauty.TouchImageView.State.ANIMATE_ZOOM;
+import static redgao.leoxun.sexynbeauty.TouchImageView.State.DRAG;
+import static redgao.leoxun.sexynbeauty.TouchImageView.State.FLING;
+import static redgao.leoxun.sexynbeauty.TouchImageView.State.NONE;
+import static redgao.leoxun.sexynbeauty.TouchImageView.State.ZOOM;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;

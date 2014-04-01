@@ -1,4 +1,6 @@
-package dovietkien.me.sexynbeauty;
+package redgao.leoxun.sexynbeauty;
+
+import redgao.leoxun.sexynbeauty.utils.GalleryLoader;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.google.android.gms.ads.AdListener;
@@ -6,7 +8,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
-import dovietkien.me.sexynbeauty.utils.GalleryLoader;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;

@@ -1,10 +1,11 @@
-package dovietkien.me.sexynbeauty;
+package redgao.leoxun.sexynbeauty;
+
+import redgao.leoxun.sexynbeauty.model.ViewItem;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
-import dovietkien.me.sexynbeauty.model.ViewItem;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

@@ -1,9 +1,10 @@
-package dovietkien.me.sexynbeauty.utils;
+package redgao.leoxun.sexynbeauty.utils;
 
 import java.util.List;
 
-import dovietkien.me.sexynbeauty.model.ViewItem;
-import dovietkien.me.sexynbeauty.model.GalleryItem;
+import redgao.leoxun.sexynbeauty.model.GalleryItem;
+import redgao.leoxun.sexynbeauty.model.ViewItem;
+
 
 public class GalleryController
 { 

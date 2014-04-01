@@ -1,4 +1,4 @@
-package dovietkien.me.sexynbeauty.utils;
+package redgao.leoxun.sexynbeauty.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,12 +15,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class GagsDownloader extends AsyncTask<String, Void, Integer> {
+public class Downloader extends AsyncTask<String, Void, Integer> {
 
     ProgressDialog dialog;
     Context mContext;
 
-    public GagsDownloader(Context mContext) {
+    public Downloader(Context mContext) {
         this.mContext = mContext;
     }
 

@@ -1,6 +1,11 @@
-package dovietkien.me.sexynbeauty;
+package redgao.leoxun.sexynbeauty;
 
 import java.util.ArrayList;
+
+import redgao.leoxun.sexynbeauty.model.ViewItem;
+import redgao.leoxun.sexynbeauty.utils.Downloader;
+import redgao.leoxun.sexynbeauty.utils.ViewController;
+import redgao.leoxun.sexynbeauty.utils.ViewController.ViewChangeListener;
 
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
@@ -19,10 +24,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import dovietkien.me.sexynbeauty.model.ViewItem;
-import dovietkien.me.sexynbeauty.utils.GagsDownloader;
-import dovietkien.me.sexynbeauty.utils.ViewController;
-import dovietkien.me.sexynbeauty.utils.ViewController.ViewChangeListener;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -34,21 +35,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.TextView;
 
 public class ViewActivity extends ActionBarActivity implements ViewChangeListener {
     private ProgressDialog dialog;
-    MenuAdapter mListAdapter;
 
     private AdView adView;
     
@@ -80,28 +75,11 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         mViewController.getViewLinks(urlToLoad);
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_view, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.item_text);
-
-        TextView tv = (TextView)MenuItemCompat.getActionView(item).findViewById(R.id.total_text);
-        tv.setText(labelInBar == null ? "" : labelInBar);
-        
-        return super.onPrepareOptionsMenu(menu);
-    }
-    
     public void setupViewPager() {
         mViewPager = (ViewPager) findViewById(R.id.viewPager);        
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this);
         mViewPager.setAdapter(mViewPagerAdapter);
-        mViewPager.setOnPageChangeListener(mViewPagerAdapter);
+        mViewPager.setOnPageChangeListener(mViewPagerAdapter);        
     }
 
     @Override
@@ -120,7 +98,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
     }
     
     public void download(View v) {
-        new GagsDownloader(this).execute(currentView.getImageUrl());
+        new Downloader(this).execute(currentView.getImageUrl());
     }
     
     public ImageLoader getImageLoader() {
@@ -235,7 +213,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
             if(!items.get(position).isLoadingOnly()) {
                 ((ViewActivity)mContext).setCurrentView(items.get(position));
                 ((ViewActivity)mContext).setLabelInBar(position + "/" + items.size());
-                ((ViewActivity)mContext).supportInvalidateOptionsMenu();
+//                ((ViewActivity)mContext).supportInvalidateOptionsMenu();
             }
         }
 

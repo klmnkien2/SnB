@@ -1,7 +1,21 @@
-package dovietkien.me.sexynbeauty;
+package redgao.leoxun.sexynbeauty;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import redgao.leoxun.sexynbeauty.model.GalleryItem;
+import redgao.leoxun.sexynbeauty.utils.GalleryController;
 
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -11,12 +25,12 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import dovietkien.me.sexynbeauty.model.GalleryItem;
-import dovietkien.me.sexynbeauty.utils.GalleryController;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -27,11 +41,13 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class GalleryFragment extends Fragment implements GalleryController.GalleryChangeListener {
 
     private static Context mContext;
+    public static float SCALE_DIP = 0, SCREEN_WIDTH = 0;
     private LayoutInflater inflater;
     private String dataUrl;        
     private ImageLoader imageLoader;
@@ -44,6 +60,7 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     public static GalleryFragment newInstance(Context mContext, String dataUrl) {
         if(GalleryFragment.mContext == null) 
             GalleryFragment.mContext = mContext;
+        setupScreenDimension();
         
         GalleryFragment fragment = new GalleryFragment();
         Bundle args = new Bundle();
@@ -62,12 +79,14 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         LinearLayout rightColView = (LinearLayout)galleryView.findViewById(R.id._galleryRight);
         
         for(int i=0; i<thumbImageUrls.size(); i++) {
-            final View view = inflater.inflate(R.layout.gallery_item, null);
+            final RelativeLayout view = (RelativeLayout)inflater.inflate(R.layout.gallery_item, null);
             final GalleryItem galleryItem = thumbImageUrls.get(i);
+            
             TextView mTitle = (TextView) view.findViewById(R.id._galleryItemTitle);        
             mTitle.setText(galleryItem.getImageUrl());     
             
 //            ImageView thumbView = (ImageView) view.findViewById(R.id._galleryItemImage);
+//            setLayoutForGalleryItem(thumbView, galleryItem.getImageUrl());
 //            imageLoader.displayImage(galleryItem.getImageUrl(), thumbView);
             
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -90,11 +109,34 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         }
     }
     
-    public int convertDipToPixels(float valueDips) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        ((Activity)mContext).getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        float SCALE_DIP = metrics.density;
-        
+    public void setLayoutForGalleryItem(ImageView view, String imageUrl) {
+        BitmapFactory.Options o = decodeImgSizeFromUrl(imageUrl);
+        int width = caculateColumnWidth();
+        int height = caculateItemHeight(o.outWidth, o.outHeight);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+        view.setLayoutParams(params);
+    }
+    
+    public static void setupScreenDimension() {
+        if(SCREEN_WIDTH == 0) { 
+            DisplayMetrics metrics = new DisplayMetrics();
+            ((Activity)mContext).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            SCALE_DIP = metrics.density;
+            SCREEN_WIDTH = metrics.widthPixels;
+        }
+    }
+    
+    public static int caculateColumnWidth() {
+        float width = (SCREEN_WIDTH - convertDipToPixels(6) * 3)/2;
+        return (int)width;
+    }
+    
+    public static int caculateItemHeight(int originWidth, int originHeight) {
+        float height = originHeight * caculateColumnWidth() / originWidth;
+        return (int)height;
+    }
+    
+    public static int convertDipToPixels(float valueDips) {
         int valuePixels = (int)(valueDips * SCALE_DIP + 0.5f);
         return valuePixels;
     }
@@ -150,6 +192,30 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         ImageLoaderConfiguration config = builder.build();
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(config);
+    }
+    
+    public static BitmapFactory.Options decodeImgSizeFromUrl(String url) {
+        try {
+            HttpClient httpclient= new DefaultHttpClient();
+            HttpGet httpget = new HttpGet(url);
+            HttpResponse response = (HttpResponse)httpclient.execute(httpget);
+            HttpEntity entity = response.getEntity();
+            BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
+            InputStream instream = bufHttpEntity.getContent();
+
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(instream, null, o);
+
+            return o;
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (ClientProtocolException e) {
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+        
     }
     
     private String replaceSpecialCharactor(String input) {

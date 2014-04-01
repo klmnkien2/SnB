@@ -1,8 +1,9 @@
-package dovietkien.me.sexynbeauty.utils;
+package redgao.leoxun.sexynbeauty.utils;
 
 import java.util.ArrayList;
 
-import dovietkien.me.sexynbeauty.model.ViewItem;
+import redgao.leoxun.sexynbeauty.model.ViewItem;
+
 
 public class ViewController
 { 
