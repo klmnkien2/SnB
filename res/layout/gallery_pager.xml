@@ -5,37 +5,12 @@
     android:layout_height="match_parent"
     android:background="@color/gallery_background" >
 
-    <ScrollView
-        android:id="@+id/_galleryContent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <LinearLayout
-            android:baselineAligned="false"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="3dip"
-            android:gravity="top"            
-            android:orientation="horizontal" >
-
-            <LinearLayout
-                android:id="@+id/_galleryLeft"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:orientation="vertical" >
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/_galleryRight"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:orientation="vertical" >
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+    <redgao.leoxun.sexynbeauty.GalleryScrollView
+        android:id="@+id/gallery_scroll_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true" >
+    </redgao.leoxun.sexynbeauty.GalleryScrollView>
 
 </RelativeLayout>

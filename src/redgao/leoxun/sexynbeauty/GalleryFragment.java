@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -38,11 +37,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 public class GalleryFragment extends Fragment implements GalleryController.GalleryChangeListener {
 
@@ -75,46 +71,46 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     }
     
     public void loadGalleryPage(final List<GalleryItem> thumbImageUrls) {
-        LinearLayout leftColView = (LinearLayout)galleryView.findViewById(R.id._galleryLeft);
-        LinearLayout rightColView = (LinearLayout)galleryView.findViewById(R.id._galleryRight);
+        GalleryScrollView mGalleryScrollView = (GalleryScrollView)galleryView.findViewById(R.id.gallery_scroll_view);
         
         for(int i=0; i<thumbImageUrls.size(); i++) {
             final RelativeLayout view = (RelativeLayout)inflater.inflate(R.layout.gallery_item, null);
             final GalleryItem galleryItem = thumbImageUrls.get(i);
             
-            TextView mTitle = (TextView) view.findViewById(R.id._galleryItemTitle);        
-            mTitle.setText(galleryItem.getImageUrl());     
+//            TextView mTitle = (TextView) view.findViewById(R.id._galleryItemTitle);        
+//            mTitle.setText(galleryItem.getImageUrl());     
             
-//            ImageView thumbView = (ImageView) view.findViewById(R.id._galleryItemImage);
-//            setLayoutForGalleryItem(thumbView, galleryItem.getImageUrl());
-//            imageLoader.displayImage(galleryItem.getImageUrl(), thumbView);
+            ImageView thumbView = (ImageView) view.findViewById(R.id._galleryItemImage);
+            view.setTag(setLayoutForGalleryItem(thumbView, galleryItem.getImageUrl()));
             
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            params.topMargin = params.bottomMargin = params.leftMargin = params.rightMargin = convertDipToPixels(6); 
-            view.setLayoutParams(params);
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+//            params.topMargin = params.bottomMargin = params.leftMargin = params.rightMargin = convertDipToPixels(6); 
+//            view.setLayoutParams(params);
+//            
+//            view.setOnClickListener(new View.OnClickListener() {
+//                
+//                @Override
+//                public void onClick(View v) {
+//                    Intent i = new Intent(getActivity(), ViewActivity.class); 
+//                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    i.putExtra("GALLERY_URL", galleryItem.getGalleryUrl());           
+//                    getActivity().startActivity(i);              
+//                }
+//            });
             
-            view.setOnClickListener(new View.OnClickListener() {
-                
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(getActivity(), ViewActivity.class); 
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    i.putExtra("GALLERY_URL", galleryItem.getGalleryUrl());           
-                    getActivity().startActivity(i);              
-                }
-            });
-            
-            if(i % 2 == 0) leftColView.addView(view);
-            else rightColView.addView(view);
+            mGalleryScrollView.addView(view);
+            imageLoader.displayImage(galleryItem.getImageUrl(), thumbView);
         }
     }
     
-    public void setLayoutForGalleryItem(ImageView view, String imageUrl) {
+    public Integer setLayoutForGalleryItem(ImageView view, String imageUrl) {
         BitmapFactory.Options o = decodeImgSizeFromUrl(imageUrl);
         int width = caculateColumnWidth();
         int height = caculateItemHeight(o.outWidth, o.outHeight);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
         view.setLayoutParams(params);
+        
+        return Integer.valueOf(height);
     }
     
     public static void setupScreenDimension() {
@@ -216,13 +212,5 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
             return null;
         }
         
-    }
-    
-    private String replaceSpecialCharactor(String input) {
-        String output = input.replaceAll("&quot;", "\"")
-                .replaceAll("&amp;", "&")
-                .replaceAll("&gt;", ">")
-                .replaceAll("&lt;", "<");
-        return output;
     }
 }

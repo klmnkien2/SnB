@@ -100,8 +100,8 @@ public class GalleryLoader extends AsyncTask<String, Integer, Void>
         final HttpParams params = mHttpClient.getParams();
         
         //Setup proxy
-        HttpHost proxy = new HttpHost("10.28.16.16", 8080, "http");
-        params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+//        HttpHost proxy = new HttpHost("10.28.16.16", 8080, "http");
+//        params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
         HttpConnectionParams.setConnectionTimeout(params, 10000);
         HttpConnectionParams.setSoTimeout(params, 10000);

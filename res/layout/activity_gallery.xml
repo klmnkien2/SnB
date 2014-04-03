@@ -15,7 +15,7 @@
         myapp:pstsShouldExpand="true"
 	    myapp:pstsIndicatorColor="@color/gallery_tab_indicator"
 	    myapp:pstsDividerColor="@color/gallery_tab_divider"
-	    myapp:pstsUnderlineColor="@color/gallery_tab_bottom_border"
+	    myapp:pstsUnderlineColor="@color/gallery_tab_indicator"
 	    android:layout_height="48dip" />
     
     <android.support.v4.view.ViewPager
