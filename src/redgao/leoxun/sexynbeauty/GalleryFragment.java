@@ -41,6 +41,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -75,38 +76,54 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     }
     
     public void loadGalleryPage(final List<GalleryItem> thumbImageUrls) {
-        LinearLayout leftColView = (LinearLayout)galleryView.findViewById(R.id._galleryLeft);
-        LinearLayout rightColView = (LinearLayout)galleryView.findViewById(R.id._galleryRight);
+        ListView leftColView = (ListView)galleryView.findViewById(R.id._galleryLeft);
+        ListView rightColView = (ListView)galleryView.findViewById(R.id._galleryRight);
+        ArrayList<GalleryItem> leftListItems = new ArrayList<GalleryItem>();
+        ArrayList<GalleryItem> rightListItems = new ArrayList<GalleryItem>();        
         
         for(int i=0; i<thumbImageUrls.size(); i++) {
-            final RelativeLayout view = (RelativeLayout)inflater.inflate(R.layout.gallery_item, null);
-            final GalleryItem galleryItem = thumbImageUrls.get(i);
             
-            TextView mTitle = (TextView) view.findViewById(R.id._galleryItemTitle);        
-            mTitle.setText(galleryItem.getImageUrl());     
+            final GalleryItem galleryItem = thumbImageUrls.get(i); 
             
-//            ImageView thumbView = (ImageView) view.findViewById(R.id._galleryItemImage);
-//            setLayoutForGalleryItem(thumbView, galleryItem.getImageUrl());
-//            imageLoader.displayImage(galleryItem.getImageUrl(), thumbView);
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+//            params.topMargin = params.bottomMargin = params.leftMargin = params.rightMargin = convertDipToPixels(6); 
+//            view.setLayoutParams(params);
+//            
+//            view.setOnClickListener(new View.OnClickListener() {
+//                
+//                @Override
+//                public void onClick(View v) {
+//                    Intent i = new Intent(getActivity(), ViewActivity.class); 
+//                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    i.putExtra("GALLERY_URL", galleryItem.getGalleryUrl());           
+//                    getActivity().startActivity(i);              
+//                }
+//            });
             
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            params.topMargin = params.bottomMargin = params.leftMargin = params.rightMargin = convertDipToPixels(6); 
-            view.setLayoutParams(params);
-            
-            view.setOnClickListener(new View.OnClickListener() {
-                
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(getActivity(), ViewActivity.class); 
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    i.putExtra("GALLERY_URL", galleryItem.getGalleryUrl());           
-                    getActivity().startActivity(i);              
-                }
-            });
-            
-            if(i % 2 == 0) leftColView.addView(view);
-            else rightColView.addView(view);
+            if(i % 2 == 0) leftListItems.add(galleryItem);
+            else rightListItems.add(galleryItem);
         }
+        
+        GalleryListAdapter leftAdapter = new GalleryListAdapter(this, leftListItems, createNameArrayList(leftListItems));
+        leftColView.setAdapter(leftAdapter);
+        leftColView.setOnScrollListener(new GalleryScrollListener() {
+            
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                ((GalleryActivity)mContext).displayAlert("Olala", "Da vao day");
+            }
+        });
+        
+        GalleryListAdapter rightAdapter = new GalleryListAdapter(this, rightListItems, createNameArrayList(rightListItems));
+        rightColView.setAdapter(rightAdapter);
+    }
+    
+    public String[] createNameArrayList(ArrayList<GalleryItem> listItems) {
+        String[] returnArray = new String[listItems.size()];
+        for(int i=0; i< listItems.size(); i++) {
+            returnArray[i] = listItems.get(i).getImageUrl();
+        }
+        return returnArray;
     }
     
     public void setLayoutForGalleryItem(ImageView view, String imageUrl) {
@@ -157,6 +174,10 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         galleryView = inflater.inflate(R.layout.gallery_pager, container, false);
         
         return galleryView;
+    }
+
+    public ImageLoader getImageLoader() {
+        return imageLoader;
     }
 
     @Override
