@@ -37,8 +37,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class GalleryFragment extends Fragment implements GalleryController.GalleryChangeListener {
 
@@ -51,7 +53,7 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     private GalleryController mGalleryController;
     private String more_thumbs_link;
     public static int LOAD_IN_ONCE_NUMBER = 5;
-    private ArrayList<GalleryItem> mGalleryItems = new ArrayList<GalleryItem>();
+    private GalleryScrollView mGalleryScrollView;
 
     public static GalleryFragment newInstance(Context mContext, String dataUrl) {
         if(GalleryFragment.mContext == null) 
@@ -71,7 +73,6 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     }
     
     public void loadGalleryPage(final List<GalleryItem> thumbImageUrls) {
-        GalleryScrollView mGalleryScrollView = (GalleryScrollView)galleryView.findViewById(R.id.gallery_scroll_view);
         
         for(int i=0; i<thumbImageUrls.size(); i++) {
             final RelativeLayout view = (RelativeLayout)inflater.inflate(R.layout.gallery_item, null);
@@ -82,17 +83,12 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
             
             ImageView thumbView = (ImageView) view.findViewById(R.id._galleryItemImage);
             view.setTag(setLayoutForGalleryItem(thumbView, galleryItem.getImageUrl()));
-            
-//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-//            params.topMargin = params.bottomMargin = params.leftMargin = params.rightMargin = convertDipToPixels(6); 
-//            view.setLayoutParams(params);
-//            
+
 //            view.setOnClickListener(new View.OnClickListener() {
 //                
 //                @Override
 //                public void onClick(View v) {
 //                    Intent i = new Intent(getActivity(), ViewActivity.class); 
-//                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 //                    i.putExtra("GALLERY_URL", galleryItem.getGalleryUrl());           
 //                    getActivity().startActivity(i);              
 //                }
@@ -152,24 +148,33 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         this.inflater = inflater;
         galleryView = inflater.inflate(R.layout.gallery_pager, container, false);
         
+        mGalleryScrollView = (GalleryScrollView)galleryView.findViewById(R.id.gallery_scroll_view);
+        mGalleryScrollView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {                
+                Log.e("kiendv", "click on " + arg1.getTag() + "-" + arg2);
+            }
+        });
+        
         return galleryView;
     }
 
     @Override
     public void onThumbsPreLoading() {
-        ((GalleryActivity)mContext).showProgressDialog();
+        mGalleryScrollView.showProgressBar();
     }
 
     @Override
     public void onThumbsLoaded(List<GalleryItem> thumbImageUrls, String nextUrl) {
         more_thumbs_link = nextUrl;
         loadGalleryPage(thumbImageUrls);
-        ((GalleryActivity)mContext).closeProgressDialog();
+        
+        mGalleryScrollView.endLoadingMore();
     }
 
     @Override
     public void onThumbsLoadFail(Exception ex) {
-        ((GalleryActivity)mContext).closeProgressDialog();
+        mGalleryScrollView.endLoadingMore();
     }
 
     public void initImageLoader() {

@@ -42,6 +42,7 @@ public class GalleryActivity extends ActionBarActivity {
     private ViewPager mViewPager;
     private GalleryPagerAdapter mGalleryPagerAdapter;
     private PagerSlidingTabStrip mtabs;
+    private GalleryFragment currentGallery;
     
     public void setupTabAndViewPager() {
         mViewPager = (ViewPager) findViewById(R.id.gallery_viewPager);
@@ -60,6 +61,14 @@ public class GalleryActivity extends ActionBarActivity {
             }
         });
         
+    }
+    
+    public void setCurrentGallery(GalleryFragment currentGallery) {
+        this.currentGallery = currentGallery;
+    }
+    
+    public GalleryFragment getCurrentGallery() {
+        return currentGallery;
     }
     
     public static class GalleryPagerAdapter extends FragmentStatePagerAdapter implements ViewPager.OnPageChangeListener {
@@ -122,6 +131,7 @@ public class GalleryActivity extends ActionBarActivity {
         @Override
         public void onPageSelected(int position) {
             GalleryFragment fragment = (GalleryFragment)getRegisteredFragment(position);
+            ((GalleryActivity)mContext).setCurrentGallery(fragment);
             if(fragment != null) {
                 fragment.loadMoreThumbs();
             }

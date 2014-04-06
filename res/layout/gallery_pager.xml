@@ -11,6 +11,14 @@
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true" >
+        <ProgressBar
+	        style="?android:attr/progressBarStyleSmall"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:indeterminateDrawable="@drawable/progress"
+	        android:visibility="gone"
+	        >
+	    </ProgressBar>
     </redgao.leoxun.sexynbeauty.GalleryScrollView>
 
 </RelativeLayout>
