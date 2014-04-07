@@ -7,9 +7,11 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.AdapterView.OnItemClickListener;
@@ -48,8 +50,8 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
     protected void setListeners()
     {
         setOnTouchListener(this);
-        setOnLongClickListener(this);
         super.setOnClickListener(this);
+        setOnLongClickListener(this);
     }
 
     protected Runnable updateTask = new Runnable() {
@@ -180,7 +182,7 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
                    break;
            }
         
-        return true;
+        return false;
     }   
     
     public void scrollToTop()
@@ -259,33 +261,37 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
     public void onClick(View v) {
         if (enabled)
         {
-            if (onItemClickListener != null && getLastIndex() != -1)
+            if (onItemClickListener != null && getLastIndex() != -1) {
                 onItemClickListener.onItemClick(null, getChildAt(getLastIndex()), getLastIndex(), getLastIndex() / 2);
+            }
         }
     }
     
     public int getLastIndex() {
+        int lastIndex = -1;
         int leftColumnHeight = padding, rightColumnHeight = padding;
         
         for (int i = 1; i < getChildCount(); i++) {
             if (getChildAt(i).getTag() instanceof Integer) {
                 
-                if (leftColumnHeight <= rightColumnHeight) {                    
-                    int x = padding;
-                    int y = leftColumnHeight + scroll;
-                    
+                if (leftColumnHeight <= rightColumnHeight) {  
                     leftColumnHeight += ((Integer)getChildAt(i).getTag() + padding);
+                    if(leftColumnHeight - scroll > lastY && lastX >= padding && lastX <= padding + itemWidth) {
+                        lastIndex = i - 1;
+                        break;
+                    }
                 } else {
-                    int x = padding * 2 + itemWidth;
-                    int y = rightColumnHeight + scroll;
-                   
-                    rightColumnHeight += ((Integer)getChildAt(i).getTag() + padding); 
+                    rightColumnHeight += ((Integer)getChildAt(i).getTag() + padding);
+                    if(rightColumnHeight - scroll > lastY && lastX >= itemWidth + padding * 2 && lastX <= padding * 2 + itemWidth * 2) {
+                        lastIndex = i - 1;
+                        break;
+                    }
                 }
             } 
         }
-        return 1;
+        return lastIndex;
     }
-     
+    
     public void setOnItemClickListener(OnItemClickListener l)
     {
         this.onItemClickListener = l;
