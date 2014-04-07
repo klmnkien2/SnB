@@ -1437,7 +1437,7 @@ containing a value of this type.
         public static final int com_facebook_list_section_header_background=0x7f020067;
         public static final int com_facebook_loginbutton_silver=0x7f020068;
         public static final int com_facebook_logo=0x7f020069;
-        public static final int com_facebook_picker_default_separator_color=0x7f0200a7;
+        public static final int com_facebook_picker_default_separator_color=0x7f0200a8;
         public static final int com_facebook_picker_item_background=0x7f02006a;
         public static final int com_facebook_picker_list_focused=0x7f02006b;
         public static final int com_facebook_picker_list_longpressed=0x7f02006c;
@@ -1493,12 +1493,13 @@ containing a value of this type.
         public static final int ic_plusone_small_off_client=0x7f02009e;
         public static final int ic_plusone_standard_off_client=0x7f02009f;
         public static final int ic_plusone_tall_off_client=0x7f0200a0;
-        public static final int overflow=0x7f0200a1;
-        public static final int progress=0x7f0200a2;
-        public static final int refresh=0x7f0200a3;
-        public static final int rounded_backgroud=0x7f0200a4;
-        public static final int selected_item=0x7f0200a5;
-        public static final int sure=0x7f0200a6;
+        public static final int icon_app=0x7f0200a1;
+        public static final int overflow=0x7f0200a2;
+        public static final int progress=0x7f0200a3;
+        public static final int refresh=0x7f0200a4;
+        public static final int rounded_backgroud=0x7f0200a5;
+        public static final int selected_item=0x7f0200a6;
+        public static final int sure=0x7f0200a7;
     }
     public static final class id {
         public static final int _errorContent=0x7f06006a;
