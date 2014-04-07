@@ -91,7 +91,11 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
             
             mGalleryScrollView.addView(view);
             mGalleryItemLst.add(galleryItem);
+<<<<<<< HEAD
             imageLoader.displayImage(galleryItem.getImageUrl(), thumbView);
+=======
+//            imageLoader.displayImage(galleryItem.getImageUrl(), thumbView);
+>>>>>>> 2d3c74ffd8d7d9516b013499c5a4f5e2cbbb0072
         }
     }
     
@@ -149,7 +153,12 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         mGalleryScrollView = (GalleryScrollView)galleryView.findViewById(R.id.gallery_scroll_view);
         mGalleryScrollView.setOnItemClickListener(new OnItemClickListener() {
             @Override
+<<<<<<< HEAD
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {      
+=======
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {                
+//                Log.e("kiendv", arg2 + mGalleryItemLst.get(arg2).getGalleryUrl());
+>>>>>>> 2d3c74ffd8d7d9516b013499c5a4f5e2cbbb0072
                 Intent i = new Intent(getActivity(), ViewActivity.class); 
                 i.putExtra("GALLERY_URL", mGalleryItemLst.get(arg2).getGalleryUrl());           
                 getActivity().startActivity(i);   
@@ -201,8 +210,13 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
             final HttpParams params = httpclient.getParams();
             
             //Setup proxy
+<<<<<<< HEAD
 //            HttpHost proxy = new HttpHost("192.168.133.252", 3128, "http");
 //            params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+=======
+            HttpHost proxy = new HttpHost("192.168.133.252", 3128, "http");
+            params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+>>>>>>> 2d3c74ffd8d7d9516b013499c5a4f5e2cbbb0072
             
             HttpGet httpget = new HttpGet(url);
             HttpResponse response = (HttpResponse)httpclient.execute(httpget);
