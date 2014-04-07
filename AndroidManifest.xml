@@ -14,7 +14,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/gag"
+        android:icon="@drawable/icon_app"
         android:label="@string/app_name"
         android:theme="@style/CustomActionBarTheme" >
         
@@ -26,6 +26,7 @@
         <activity
             android:name="redgao.leoxun.sexynbeauty.GalleryActivity"
             android:label="@string/app_name" 
+            android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

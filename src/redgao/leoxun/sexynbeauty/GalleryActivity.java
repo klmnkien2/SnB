@@ -76,9 +76,9 @@ public class GalleryActivity extends ActionBarActivity {
         SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
         
         private final String[] nav_names = {
-                "Việt Nam",
+                "Vietnam",
                 "Asia",
-                "Âu - Mỹ",
+                "US - UK",
         };
         
         private final String[] nav_links = {
@@ -104,7 +104,12 @@ public class GalleryActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return GalleryFragment.newInstance(mContext, nav_links[position]);
+            GalleryFragment fragment = null;
+            if(registeredFragments != null && registeredFragments.size() > position)
+                fragment = (GalleryFragment)getRegisteredFragment(position);
+            if(fragment == null)
+                fragment = GalleryFragment.newInstance(mContext, nav_links[position]);
+            return fragment;
         }
         
         @Override
@@ -132,7 +137,7 @@ public class GalleryActivity extends ActionBarActivity {
         public void onPageSelected(int position) {
             GalleryFragment fragment = (GalleryFragment)getRegisteredFragment(position);
             ((GalleryActivity)mContext).setCurrentGallery(fragment);
-            if(fragment != null) {
+            if(fragment != null && fragment.getGalleryItemLst() != null && fragment.getGalleryItemLst().isEmpty()) {
                 fragment.loadMoreThumbs();
             }
         }

@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
 
 import redgao.leoxun.sexynbeauty.model.GalleryItem;
 import redgao.leoxun.sexynbeauty.utils.GalleryController;
@@ -52,6 +55,7 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     private View galleryView;
     private GalleryController mGalleryController;
     private String more_thumbs_link;
+    private List<GalleryItem> mGalleryItemLst;
     public static int LOAD_IN_ONCE_NUMBER = 5;
     private GalleryScrollView mGalleryScrollView;
 
@@ -72,29 +76,21 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         mGalleryController.getMoreThumbs(more_thumbs_link);
     }
     
+    public List<GalleryItem> getGalleryItemLst() {
+        return mGalleryItemLst;
+    }
+
     public void loadGalleryPage(final List<GalleryItem> thumbImageUrls) {
         
         for(int i=0; i<thumbImageUrls.size(); i++) {
             final RelativeLayout view = (RelativeLayout)inflater.inflate(R.layout.gallery_item, null);
             final GalleryItem galleryItem = thumbImageUrls.get(i);
-            
-//            TextView mTitle = (TextView) view.findViewById(R.id._galleryItemTitle);        
-//            mTitle.setText(galleryItem.getImageUrl());     
-            
+               
             ImageView thumbView = (ImageView) view.findViewById(R.id._galleryItemImage);
             view.setTag(setLayoutForGalleryItem(thumbView, galleryItem.getImageUrl()));
-
-//            view.setOnClickListener(new View.OnClickListener() {
-//                
-//                @Override
-//                public void onClick(View v) {
-//                    Intent i = new Intent(getActivity(), ViewActivity.class); 
-//                    i.putExtra("GALLERY_URL", galleryItem.getGalleryUrl());           
-//                    getActivity().startActivity(i);              
-//                }
-//            });
             
             mGalleryScrollView.addView(view);
+            mGalleryItemLst.add(galleryItem);
             imageLoader.displayImage(galleryItem.getImageUrl(), thumbView);
         }
     }
@@ -139,6 +135,8 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         dataUrl = getArguments().getString("dataUrl");
         
         more_thumbs_link = dataUrl;
+        mGalleryItemLst = new ArrayList<GalleryItem>();
+        
         mGalleryController = new GalleryController(this);
         initImageLoader();
     }
@@ -151,8 +149,10 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
         mGalleryScrollView = (GalleryScrollView)galleryView.findViewById(R.id.gallery_scroll_view);
         mGalleryScrollView.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {                
-                Log.e("kiendv", "click on " + arg1.getTag() + "-" + arg2);
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {      
+                Intent i = new Intent(getActivity(), ViewActivity.class); 
+                i.putExtra("GALLERY_URL", mGalleryItemLst.get(arg2).getGalleryUrl());           
+                getActivity().startActivity(i);   
             }
         });
         
@@ -198,6 +198,12 @@ public class GalleryFragment extends Fragment implements GalleryController.Galle
     public static BitmapFactory.Options decodeImgSizeFromUrl(String url) {
         try {
             HttpClient httpclient= new DefaultHttpClient();
+            final HttpParams params = httpclient.getParams();
+            
+            //Setup proxy
+//            HttpHost proxy = new HttpHost("192.168.133.252", 3128, "http");
+//            params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+            
             HttpGet httpget = new HttpGet(url);
             HttpResponse response = (HttpResponse)httpclient.execute(httpget);
             HttpEntity entity = response.getEntity();
