@@ -1,0 +1,7 @@
+<resources>
+
+   <dimen name="paginator_button_text_size">22dip</dimen>
+    <dimen name="paginator_button_height">45dip</dimen>
+    <dimen name="galerry_loading_size">40dip</dimen>
+
+</resources>

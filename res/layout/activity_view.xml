@@ -25,14 +25,14 @@
             android:layout_weight="1"
             android:gravity="center"
             android:minHeight="36dip"
-            android:onClick="download"
+            android:onClick="email"
             android:orientation="horizontal" >
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/download32" />
+                android:src="@drawable/email" />
 
             <TextView
                 android:id="@+id/textView"
@@ -41,7 +41,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:paddingLeft="2dip"
-                android:text="Download"
+                android:text="Email"
                 android:textColor="#000f63"
                 android:textSize="@dimen/button_font_size" />
         </LinearLayout>
@@ -59,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/facebook32" />
+                android:src="@drawable/share" />
 
             <TextView
                 android:id="@+id/textView"
@@ -68,7 +68,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:paddingLeft="2dip"
-                android:text="Share"
+                android:text="Facebook"
                 android:textColor="#000f63"
                 android:textSize="@dimen/button_font_size" />
         </LinearLayout>

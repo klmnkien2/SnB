@@ -11,6 +11,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
+    <!-- Optional, but without them, you might get less ads and tracking could be less accurate -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -50,7 +54,10 @@
         
         
         <activity android:name="com.google.android.gms.ads.AdActivity"
-             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+        
+        <activity android:name="com.purplebrain.adbuddiz.sdk.AdBuddizActivity" 
+            android:theme="@android:style/Theme.Translucent" />
         
     </application>
 

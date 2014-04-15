@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <string name="app_name">Sex n Beauty</string>
+    <string name="app_name">Sexy n Beauty</string>
     <string name="facebook_app_id">483436361760813</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="ad_unit_id">a153047de30f2fc</string>
-
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
-    <string name="app_not_available">Sorry, there\'s no web browser available</string>
+    <string name="ad_unit_id">a15344099c1c555</string>
     
     <string name="dialog_ok">OK</string>
     <string name="permission_not_granted">Unable to perform action because permissions were not granted.</string>
     <string name="cancelled">Cancelled</string>
     <string name="nav_back">Back</string>
+    
+    <string name="view_note">Swipe left or right to change images.</string>
 </resources>

@@ -3,7 +3,6 @@ package redgao.leoxun.sexynbeauty;
 import java.util.ArrayList;
 
 import redgao.leoxun.sexynbeauty.model.ViewItem;
-import redgao.leoxun.sexynbeauty.utils.Downloader;
 import redgao.leoxun.sexynbeauty.utils.ViewController;
 import redgao.leoxun.sexynbeauty.utils.ViewController.ViewChangeListener;
 
@@ -18,18 +17,15 @@ import com.facebook.widget.WebDialog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.utils.ImageFetcher;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -38,6 +34,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -49,14 +46,14 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
     
     private ViewPager mViewPager;
     private ViewPagerAdapter mViewPagerAdapter;
-    private ImageLoader imageLoader;
+//    private ImageLoader imageLoader;
     private String urlToLoad;
     
     private ViewController mViewController;
     
     // Url of viewing image
     private ViewItem currentView;  
-    private String labelInBar;
+//    private String labelInBar;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +62,11 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         setupFacebookOnCreate(savedInstanceState);
         
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initImageLoader();
-        addAds();        
+//        initImageLoader();
+        addAds();     
+        
+        setupScreenDimension();
+        setupBitmapHandler();
         
         urlToLoad = getIntent().getStringExtra("GALLERY_URL");
         
@@ -97,30 +97,55 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         return true;
     }
     
-    public void download(View v) {
-        new Downloader(this).execute(currentView.getImageUrl());
+    public void email(View v) {
+        sendEmail();
     }
     
-    public ImageLoader getImageLoader() {
-        return imageLoader;
+//    public ImageLoader getImageLoader() {
+//        return imageLoader;
+//    }
+//
+//    private void initImageLoader() {
+//        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+//        .cacheOnDisc(true)
+//        .cacheInMemory(true)
+//        .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+//        .considerExifParams(true)
+//        .bitmapConfig(Bitmap.Config.RGB_565).build();
+//
+//        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(this)
+//        .defaultDisplayImageOptions(defaultOptions)
+//        .discCacheFileCount(50)
+//        .memoryCache(new WeakMemoryCache());
+//
+//        ImageLoaderConfiguration config = builder.build();
+//        imageLoader = ImageLoader.getInstance();
+//        imageLoader.init(config);
+//    }
+    
+    /*
+     * BitmapHandler coding  block
+     */
+    private static final String IMAGE_CACHE_DIR = "SnB.data";
+    private ImageFetcher imageFetcher; 
+    public void setupBitmapHandler() {
+        imageFetcher = new ImageFetcher(this, (int)SCREEN_WIDTH, (int)SCREEN_HEIGHT);
+        imageFetcher.addImageCache(this, IMAGE_CACHE_DIR);
     }
-
-    private void initImageLoader() {
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-        .cacheOnDisc(true)
-        .cacheInMemory(true)
-        .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-        .considerExifParams(true)
-        .bitmapConfig(Bitmap.Config.RGB_565).build();
-
-        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(this)
-        .defaultDisplayImageOptions(defaultOptions)
-        .discCacheFileCount(50)
-        .memoryCache(new WeakMemoryCache());
-
-        ImageLoaderConfiguration config = builder.build();
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(config);
+    
+    public ImageFetcher getImageFetcher() {
+        return imageFetcher;
+    }
+    
+    public float SCALE_DIP = 0, SCREEN_WIDTH = 0, SCREEN_HEIGHT = 0;
+    public void setupScreenDimension() {
+        if(SCREEN_WIDTH == 0) { 
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            SCALE_DIP = metrics.density;
+            SCREEN_WIDTH = metrics.widthPixels;
+            SCREEN_HEIGHT = metrics.heightPixels;
+        }
     }
 
     public void refeshGags() {
@@ -129,30 +154,31 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
 
     public static class ViewPagerAdapter extends FragmentStatePagerAdapter implements ViewPager.OnPageChangeListener {
         private ArrayList<ViewItem> items = new ArrayList<ViewItem>();
-        private int loadedItems;
+        private int showedItems;
         private final int NUMBER_ITEMS_PER_LOADING = 5;
         private Context mContext;
 
         public ViewPagerAdapter(FragmentManager fragmentManager, Context mContext) {
             super(fragmentManager);
             this.mContext = mContext;
-            this.loadedItems = 0;
+            this.showedItems = 0;
         }
         
         public void resetItems() {
-            this.loadedItems = 0;
+            items.clear();
+            this.showedItems = 0;
 
             notifyDataSetChanged();
         }
         
         public void addMoreItems(ArrayList<ViewItem> moreItems) {
             removeLoadingOnly();
-
+            
             for (ViewItem item : moreItems) {
                 items.add(item);
             }
 
-            notifyDataSetChanged();
+            addMoreItems();
         }
         
         public void notifyNetworkTrouble() {
@@ -169,7 +195,9 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         public void addLoadingOnly() {
             ViewItem loadingOnly = new ViewItem("X");
             loadingOnly.setLoadingOnly(true);
+            
             items.add(loadingOnly);
+            showedItems++;
 
             notifyDataSetChanged();
         }
@@ -177,14 +205,15 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         public void removeLoadingOnly() {
             if(items.get(items.size()-1).isLoadingOnly()) {
                 items.remove(items.size()-1);
+                showedItems--;
             }
         }
 
         public void addMoreItems() {            
 
-            if(loadedItems + NUMBER_ITEMS_PER_LOADING > items.size())
-                loadedItems = loadedItems + NUMBER_ITEMS_PER_LOADING;
-            else loadedItems = items.size();
+            if(showedItems + NUMBER_ITEMS_PER_LOADING < items.size())
+                showedItems = showedItems + NUMBER_ITEMS_PER_LOADING;
+            else showedItems = items.size();
            
             notifyDataSetChanged();
         }
@@ -196,11 +225,13 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
 
         @Override
         public int getCount() {
-            return items.size();
+            return showedItems;
         }
 
         @Override
         public Fragment getItem(int position) {
+            ViewItem item = items.get(position);
+            item.setTitle((position + 1) + "/" + items.size());
             return ViewFragment.newInstance( position, items.get(position));
         }
 
@@ -212,8 +243,10 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         public void onPageSelected(int position) {
             if(!items.get(position).isLoadingOnly()) {
                 ((ViewActivity)mContext).setCurrentView(items.get(position));
-                ((ViewActivity)mContext).setLabelInBar(position + "/" + items.size());
-//                ((ViewActivity)mContext).supportInvalidateOptionsMenu();
+            }
+            
+            if(!items.get(position).isLoadingOnly() && position == showedItems-1 && showedItems < items.size()-1) {
+                addMoreItems();
             }
         }
 
@@ -242,6 +275,10 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         super.onPause();
         adView.pause();
         uiHelper.onPause();
+        
+        imageFetcher.setPauseWork(false);
+        imageFetcher.setExitTasksEarly(true);
+        imageFetcher.flushCache();
     }
 
     @Override
@@ -249,6 +286,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         super.onResume();
         adView.resume();
         uiHelper.onResume();
+        imageFetcher.setExitTasksEarly(false);
     }
 
     @Override
@@ -256,6 +294,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
         super.onDestroy();
         uiHelper.onDestroy();
         adView.destroy();
+        imageFetcher.closeCache();
     }
 
     private void addAds() {
@@ -274,6 +313,41 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
 
         adView.loadAd(adRequest);
     }
+    
+    /*
+     * Send email code stuff
+     */
+    private void sendEmail() {
+
+        String[] TO = {};
+        String[] CC = {};
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_CC, CC);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Wow, check this amazing app!");
+        
+        StringBuilder emailContent = new StringBuilder("");
+        emailContent.append("That was WOW picture :X.");        
+        emailContent.append('\n');
+        emailContent.append(currentView.getImageUrl());
+        emailContent.append('\n');
+        emailContent.append('\n');
+        emailContent.append("Install app for more picture then. Please follow the link below");
+        emailContent.append('\n');
+        emailContent.append(getLink());       
+        emailIntent.putExtra(Intent.EXTRA_TEXT, emailContent.toString());
+        
+        try {
+           startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+           finish();
+        } catch (ActivityNotFoundException ex) {
+//           Log.e("Error", "There is no email client installed.");
+        }
+     }
     
     /*
      * Facebook code stuff
@@ -387,7 +461,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
     }
     
     private String getName() {
-        return "9Gag Viewer For Free";
+        return "Wowwww!";
     }
     
     private String getLink() {
@@ -395,7 +469,7 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
     }
     
     private String getMessage() {
-        return "This is awesome! Just install the app and enjoy funny pics";
+        return "This is awesome! Just install the app and enjoy pics";
     }
     
     public void displayAlert(String title, String message) {
@@ -427,15 +501,14 @@ public class ViewActivity extends ActionBarActivity implements ViewChangeListene
 
     @Override
     public void onViewLoadFail(Exception ex) {
-        // TODO Auto-generated method stub
-        
+        mViewPagerAdapter.notifyNetworkTrouble();
     }
     
     public void setCurrentView(ViewItem item) {
         this.currentView = item;
     }
     
-    public void setLabelInBar(String label) {
-        this.labelInBar = label;
-    }
+//    public void setLabelInBar(String label) {
+//        this.labelInBar = label;
+//    }
 }

@@ -3,16 +3,21 @@ package redgao.leoxun.sexynbeauty;
 import redgao.leoxun.sexynbeauty.utils.GalleryLoader;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.crittercism.app.Crittercism;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
+import com.purplebrain.adbuddiz.sdk.AdBuddiz;
+import com.purplebrain.adbuddiz.sdk.AdBuddizDelegate;
+import com.purplebrain.adbuddiz.sdk.AdBuddizError;
+import com.purplebrain.adbuddiz.sdk.AdBuddizLogLevel;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -28,12 +33,20 @@ public class GalleryActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        Crittercism.initialize(getApplicationContext(), "5347e67ca6d3d71640000001");
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+          }
+        
         setContentView(R.layout.activity_gallery);
         getSupportActionBar().hide();
         
-        addAds();
         setupTabAndViewPager();
-        setupProgressDialog();
+        
+        admob();
+        adBuddiz();
     }
     
     /*
@@ -76,15 +89,15 @@ public class GalleryActivity extends ActionBarActivity {
         SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
         
         private final String[] nav_names = {
-                "Vietnam",
-                "Asia",
                 "US - UK",
+                "Asia",   
+                "Vietnam",             
         };
         
         private final String[] nav_links = {
-                GalleryLoader.VN_URL,
-                GalleryLoader.ASIA_URL,
                 GalleryLoader.USUK_URL,
+                GalleryLoader.ASIA_URL,
+                GalleryLoader.VN_URL,                
         };
 
         public GalleryPagerAdapter(FragmentManager fragmentManager, Context mContext) {            
@@ -135,6 +148,11 @@ public class GalleryActivity extends ActionBarActivity {
 
         @Override
         public void onPageSelected(int position) {
+            GalleryFragment oldFragment = ((GalleryActivity)mContext).getCurrentGallery();
+            if(oldFragment != null) {
+                oldFragment.removeAllThumbs();
+            }
+            
             GalleryFragment fragment = (GalleryFragment)getRegisteredFragment(position);
             ((GalleryActivity)mContext).setCurrentGallery(fragment);
             if(fragment != null && fragment.getGalleryItemLst() != null && fragment.getGalleryItemLst().isEmpty()) {
@@ -157,20 +175,47 @@ public class GalleryActivity extends ActionBarActivity {
      * Admob coding block
      */
     private AdView adView;
-    private InterstitialAd interstitial;  
     
     @Override
     public void onBackPressed() {
-        if (interstitial.isLoaded()) {
-            interstitial.setAdListener(new AdListener() {
+        if (AdBuddiz.isReadyToShowAd(this)) { // this = current Activity
+            
+            AdBuddiz.setDelegate(new AdBuddizDelegate() {
+                
                 @Override
-                public void onAdClosed() {
-                    moveTaskToBack(true);
+                public void didShowAd() {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                public void didHideAd() {
+                    confirmMessage("Confirm", "Do you really want to quit?");
+                }
+                
+                @Override
+                public void didFailToShowAd(AdBuddizError arg0) {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                public void didClick() {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                public void didCacheAd() {
+                    // TODO Auto-generated method stub
+                    
                 }
             });
-            interstitial.show();
-        } else {        
-            moveTaskToBack(true);
+            AdBuddiz.showAd(this);
+        }
+        
+        else {        
+            confirmMessage("Confirm", "Do you really want to quit?");
         }
     }
 
@@ -190,9 +235,10 @@ public class GalleryActivity extends ActionBarActivity {
     public void onDestroy() {
         super.onDestroy();
         adView.destroy();
+        AdBuddiz.onDestroy();
     }
 
-    private void addAds() {
+    private void admob() {
         adView = (AdView) findViewById(R.id.adView); 
         adView.setAdListener(new AdListener() {
         
@@ -207,13 +253,13 @@ public class GalleryActivity extends ActionBarActivity {
         .build();
 
         adView.loadAd(adRequest);
-        
-        // Create the interstitial.
-        interstitial = new InterstitialAd(this);
-        interstitial.setAdUnitId(getResources().getString(R.string.ad_unit_id));
-
-        // Begin loading your interstitial.
-        interstitial.loadAd(adRequest);
+    }
+    
+    private void adBuddiz() {
+        AdBuddiz.setPublisherKey("c360629f-14e1-4102-abe5-0df0817841a9");
+        AdBuddiz.cacheAds(this); // this = current Activity
+//        AdBuddiz.setTestModeActive();
+        AdBuddiz.setLogLevel(AdBuddizLogLevel.Info);
     }
     
     /*
@@ -243,13 +289,21 @@ public class GalleryActivity extends ActionBarActivity {
         }
     }
     
-    public void displayAlert(String title, String message) {
+    public void confirmMessage(String title, String message) {
 
         AlertDialog.Builder confirm = new AlertDialog.Builder(this);
         confirm.setTitle(title);
         confirm.setMessage(message);
 
         confirm.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+
+                System.exit(0);
+            }
+        });
+        
+        confirm.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
 

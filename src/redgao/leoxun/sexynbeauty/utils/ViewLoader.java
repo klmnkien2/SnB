@@ -100,7 +100,7 @@ public class ViewLoader extends AsyncTask<String, Integer, Void>
         final HttpParams params = mHttpClient.getParams();
         
         //Setup proxy
-//        HttpHost proxy = new HttpHost("10.28.16.16", 8080, "http");
+//        HttpHost proxy = new HttpHost("192.168.133.252", 8080, "http");
 //        params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         
         HttpConnectionParams.setConnectionTimeout(params, 10000);
@@ -117,7 +117,7 @@ public class ViewLoader extends AsyncTask<String, Integer, Void>
 
         doc = Jsoup.parse(str);
 
-        content = doc.select("#vd-view-carousel").get(0);    
+        content = doc.select("#vd-view-carousel").get(0); 
   
         elements = content.select(".carousel-inner > .item"); 
     }
@@ -140,9 +140,10 @@ public class ViewLoader extends AsyncTask<String, Integer, Void>
 
     private ViewItem getItem(Element e)
     {
-        try {            
-            String imageUrl = e.select("img.img").get(0).attr("src");            
-            Log.e("imageUrl", imageUrl);
+        try {
+//            Log.e("e", e.html());
+            String imageUrl = e.select("img.img").get(0).attr("data-original");            
+//            Log.e("imageUrl", imageUrl);
     
             return new ViewItem(imageUrl);
         } catch (Exception ex) {

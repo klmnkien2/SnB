@@ -1,5 +1,8 @@
 # cache for current jar dependency. DO NOT EDIT.
 # format is <lastModified> <length> <SHA-1> <path>
 # Encoding is UTF-8
-1392342708000 556198 4a6be13368bb64c5a0b0460632d228a1a915f58f F:\androids\apps\PagerSlidingTabStrip-master\library\libs\android-support-v4.jar
-1392342708000 556198 4a6be13368bb64c5a0b0460632d228a1a915f58f F:\androids\apps\Gag\libs\android-support-v4.jar
+1396942786000 349134 21297ae2bf22a0ce81c9b59992cf0693eec45d5b F:\androids\apps\SnB-master\libs\android-support-v7-appcompat.jar
+1396968404000 349134 21297ae2bf22a0ce81c9b59992cf0693eec45d5b F:\androids\systems\adt-bundle-windows-x86-20130522\sdk\extras\android\support\v7\appcompat\libs\android-support-v7-appcompat.jar
+1396942784000 648327 ded9acc6a9792b8f1afc470f0c9cd36d178914cd F:\androids\apps\SnB-master\libs\android-support-v4.jar
+1396968400000 648327 ded9acc6a9792b8f1afc470f0c9cd36d178914cd F:\androids\systems\adt-bundle-windows-x86-20130522\sdk\extras\android\support\v7\appcompat\libs\android-support-v4.jar
+1396968400000 648327 ded9acc6a9792b8f1afc470f0c9cd36d178914cd F:\androids\apps\PagerSlidingTabStrip-master\library\libs\android-support-v4.jar

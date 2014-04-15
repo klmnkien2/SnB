@@ -5,9 +5,21 @@
 
     <redgao.leoxun.sexynbeauty.TouchImageView
         android:id="@+id/_image"
+        android:background="@android:color/transparent"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:id="@+id/_viewNote"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="1dip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@color/color_title_backgound"
+        android:textColor="@android:color/white"
+        android:gravity="center" />
+    
     <ProgressBar
         android:id="@+id/_progressBar"
         style="?android:attr/progressBarStyle"

@@ -7,14 +7,13 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 
 @SuppressLint("WrongCall")
 public class GalleryScrollView extends ViewGroup implements View.OnTouchListener, View.OnClickListener, View.OnLongClickListener {
@@ -24,7 +23,7 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
     protected Handler handler = new Handler();
 
     protected int lastX = -1, lastY = -1;
-    protected boolean touching = false, reachEnd = false, enabled = true;
+    protected boolean touching = false, loadingData = false, enabled = true;
     
     protected Context context;
     
@@ -45,6 +44,21 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
         padding = 10;
         rightTotalHeight = leftTotalHeight = padding;
         itemWidth = (metrics.widthPixels - 3* padding) / 2;
+    }
+    
+    public void buttonClickListener(int type) {
+        switch (type) {
+        case 0: //back
+            
+            break;
+        
+        case 1: //next
+            startLoadingMore();
+            break;
+
+        default:
+            break;
+        }
     }
 
     protected void setListeners()
@@ -90,15 +104,23 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
         super.removeViewAt(index);
     };
     
+    public void removeAllThumbs() {
+        int currentChilds = getChildCount();
+        for (int i = 3; i < currentChilds; i++) {
+            if (getChildAt(3).getTag() instanceof Integer) {
+                removeViewAt(3);
+            } 
+        }
+        rightTotalHeight = leftTotalHeight = padding;
+    }
+    
     //LAYOUT
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int leftColumnHeight = padding, rightColumnHeight = padding;
         
-        for (int i = 1; i < getChildCount(); i++) {
-            if (getChildAt(i).getTag() instanceof String) {
-                
-            } else if (getChildAt(i).getTag() instanceof Integer) {
+        for (int i = 3; i < getChildCount(); i++) {
+            if (getChildAt(i).getTag() instanceof Integer) {
                 
                 if (leftColumnHeight <= rightColumnHeight) {                    
                     int x = padding;
@@ -118,12 +140,24 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
             } 
         }
         
-        if(reachEnd) {
+        int x, y, lastHeight = Math.max(leftTotalHeight, rightTotalHeight) - scroll;
+        if(loadingData) {
             ProgressBar progressBar = (ProgressBar)getChildAt(0);
-            int x = (itemWidth * 2 + padding * 3 - progressBarSize()) / 2;
-            int y = Math.max(leftTotalHeight, rightTotalHeight) - scroll;
+            x = (itemWidth * 2 + padding * 3 - progressBarSize()) / 2;
+            y = lastHeight;
             progressBar.layout(x, y, x + progressBarSize(), y + progressBarSize());
-        }
+            lastHeight = y + progressBarSize();
+        } 
+        
+        TextView backBtn = (TextView)getChildAt(1);
+        x = padding;
+        y = lastHeight;
+        backBtn.layout(x, y, x + paginatorButtonWidth(), y + paginatorHeight());
+        
+        TextView nextBtn = (TextView)getChildAt(2);
+        x = padding * 2 + paginatorButtonWidth();
+        y = lastHeight;
+        nextBtn.layout(x, y, x + paginatorButtonWidth(), y + paginatorHeight()); 
     }
     
     @Override
@@ -143,9 +177,15 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
         ProgressBar progressBar = (ProgressBar)getChildAt(0);
         progressBar.measure(MeasureSpec.makeMeasureSpec(progressBarSize(), MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(progressBarSize(), MeasureSpec.AT_MOST));
         
+        TextView backBtn = (TextView)getChildAt(1);
+        backBtn.measure(MeasureSpec.makeMeasureSpec(paginatorButtonWidth(), MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(paginatorHeight(), MeasureSpec.AT_MOST));
+        
+        TextView nextBtn = (TextView)getChildAt(2);
+        nextBtn.measure(MeasureSpec.makeMeasureSpec(paginatorButtonWidth(), MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(paginatorHeight(), MeasureSpec.AT_MOST));
+        
         // Use the size our parents gave us, but default to a minimum size to avoid
         int width = itemWidth * 2 + padding * 3;
-        int height = Math.max(leftTotalHeight, rightTotalHeight) + progressBarSize();
+        int height = Math.max(leftTotalHeight, rightTotalHeight) + progressBarSize() + paginatorHeight() + padding;
         setMeasuredDimension(resolveSize(width, widthMeasureSpec),  resolveSize(height, heightMeasureSpec));
     }
  
@@ -192,7 +232,7 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
     
     public void scrollToBottom()
     {
-        scroll = Integer.MAX_VALUE;
+        scroll = getMaxScroll();
         clampScroll();
     }
     
@@ -221,9 +261,6 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
         }
         else if (scroll > max)
         {
-            if(!reachEnd) {
-                startLoadingMore();
-            }
             if (scroll <= max + stretch)
                 scroll = max;
             else if (!touching)
@@ -233,28 +270,39 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
     
     protected int getMaxScroll()
     {
-        return Math.max(leftTotalHeight, rightTotalHeight) + progressBarSize() - getHeight();
+        return Math.max(leftTotalHeight, rightTotalHeight) + progressBarSize() + paginatorHeight() + padding - getHeight();
     }
     
     protected int progressBarSize() {
-        float valueDips = 32;
-        return (int)(valueDips * scale_dip + 0.5f);
+        if(!loadingData) return 0;
+        return (int) context.getResources().getDimension(R.dimen.galerry_loading_size);
+    }
+    
+    protected int paginatorHeight() {
+        return (int) context.getResources().getDimension(R.dimen.paginator_button_height);
+    }
+    
+    protected int paginatorButtonWidth() {
+        return itemWidth;
     }
     
     public void showProgressBar() {
         ProgressBar progressBar = (ProgressBar)getChildAt(0);
         progressBar.setVisibility(VISIBLE);
-        reachEnd = true;
+        loadingData = true;
+        scrollToBottom();
     }
     
     public void startLoadingMore() {
-        ((GalleryActivity)context).getCurrentGallery().loadMoreThumbs();
+        if(!loadingData) {
+            ((GalleryActivity)context).getCurrentGallery().loadMoreThumbs();
+        }
     }
     
     public void endLoadingMore() {
         ProgressBar progressBar = (ProgressBar)getChildAt(0);
         progressBar.setVisibility(GONE);
-        reachEnd = false;
+        loadingData = false;
     }
 
     @Override
@@ -263,7 +311,7 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
         {
             if (onItemClickListener != null && getLastIndex() != -1) {
                 onItemClickListener.onItemClick(null, getChildAt(getLastIndex()), getLastIndex(), getLastIndex() / 2);
-            }
+            } 
         }
     }
     
@@ -271,19 +319,19 @@ public class GalleryScrollView extends ViewGroup implements View.OnTouchListener
         int lastIndex = -1;
         int leftColumnHeight = padding, rightColumnHeight = padding;
         
-        for (int i = 1; i < getChildCount(); i++) {
+        for (int i = 3; i < getChildCount(); i++) {
             if (getChildAt(i).getTag() instanceof Integer) {
                 
                 if (leftColumnHeight <= rightColumnHeight) {  
                     leftColumnHeight += ((Integer)getChildAt(i).getTag() + padding);
                     if(leftColumnHeight - scroll > lastY && lastX >= padding && lastX <= padding + itemWidth) {
-                        lastIndex = i - 1;
+                        lastIndex = i - 3;
                         break;
                     }
                 } else {
                     rightColumnHeight += ((Integer)getChildAt(i).getTag() + padding);
                     if(rightColumnHeight - scroll > lastY && lastX >= itemWidth + padding * 2 && lastX <= padding * 2 + itemWidth * 2) {
-                        lastIndex = i - 1;
+                        lastIndex = i - 3;
                         break;
                     }
                 }

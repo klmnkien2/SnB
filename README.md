@@ -1,1 +1,4 @@
-https://github.com/Eaiman/BitmapHandler
+SimplePrints-Android
+====================
+
+Our awesome Android version of SimplePrints

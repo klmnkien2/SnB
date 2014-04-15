@@ -20,5 +20,25 @@
 	        >
 	    </ProgressBar>
     </redgao.leoxun.sexynbeauty.GalleryScrollView>
+    
+    <LinearLayout 
+        android:id="@+id/galleryError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:visibility="gone">
+        <ImageView 
+            android:src="@drawable/dark_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trouble loading. Tap to retry!"
+            android:textColor="@android:color/black"/>
+    </LinearLayout>
 
 </RelativeLayout>
